@@ -28,8 +28,9 @@ def gaussian_kernel(channels, size, sigma):
 def produce_low_resolution(input, k=3, blur_size=3, blur_sigma=0.5):
     """
     Produces a batch of low resolution images from the high resolution images `input`.
-    The images are produced by applying a Gaussian blur with kernel size `blur_size` x `blur_size` and standard deviation `blur_sigma`,
-    downsampling by `k`, and applying bicubic interpolation back to the size of the input batch.
+    The images are produced by applying a Gaussian blur with kernel size `blur_size` x `blur_size`
+    and standard deviation `blur_sigma`, downsampling by `k`, and applying bicubic interpolation
+    up to the size of the input batch.
     """
 
     n_channels = input.get_shape().as_list()[3];
