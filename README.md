@@ -1,6 +1,6 @@
 ## Image super-resolution with convolutional neural networks
 
-Written by Caleb Zulawski and Kelvin Lin for ECE411 Computational Graphs for Machine Learning at The Cooper Union.
+Written by Caleb Zulawski and Kelvin Lin for ECE411 *Computational Graphs for Machine Learning* at The Cooper Union.
 
 ---
 
