@@ -1,5 +1,6 @@
 n00015388 Animal, animate being, beast, brute, creature, fauna
-n01317541 Domestic animal, domesticated animaln04341686 Structure, construction
+n01317541 Domestic animal, domesticated animal
+n04341686 Structure, construction
 n00017222 Plant, flora, plant life
 n13083023 Houseplant
 n12205694 Herb, herbaceous plant
