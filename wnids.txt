@@ -20,3 +20,4 @@ n09620794 Native, indigen, indigene, aborigine, aboriginal
 n10788852 Woman
 n09632518 Worker
 n00523513 Sport, athletics
+n00021265 Food, nutrient
