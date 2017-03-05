@@ -15,25 +15,27 @@ class Trainer():
     def train_iter(self, batcher, validate=False):
         if validate:
             # There's probably a better way to do this than getting a batch, then feeding it back into the model
-            batch, batch_cropped = self.sess.run([batcher, center_crop_to_size(batcher, self.model.output.get_shape().as_list())])
-            _, loss, psnr = self.sess.run([self.optimizer, self.model.loss, validation.psnr(batch_cropped, self.model.output)], feed_dict={self.model.input: batch})
-            print([loss, psnr])
+            batch = self.sess.run(batcher)
+            _, loss, psnr = self.sess.run([self.optimizer, self.model.loss, validation.gain(self.model.input, self.model.output)], feed_dict={self.model.input: batch})
+            print('Loss: {:.2f}\tGain compared to bicubic interpolation: {:.2f} dB'.format(loss, psnr))
         else:
             batch = self.sess.run(batcher)
             self.sess.run(self.optimizer, feed_dict={self.model.input: batch})
 
     def train(self, batcher):
         for i in range(100000):
-            self.train_iter(batcher, i % 100 == 0)
+            self.train_iter(batcher, i % 2 == 0)
+
 
 if __name__ == '__main__':
+    batch_size = 100
     import model
     from files import FileReader
-    m = model.Model()
+    m = model.Model(batch_size=batch_size)
     m.build_model()
     with tf.Session() as sess:
         t = Trainer(sess, m)
-        f = FileReader('./images/crop_256/*/*.JPEG', (33, 33), batch_size=10)
+        f = FileReader('./images/crop_256/*/*.JPEG', (33, 33), batch_size=batch_size)
         tf.global_variables_initializer().run()
         f.start_queue_runners()
         t.train(f.get_batch())

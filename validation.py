@@ -1,16 +1,26 @@
 #!/usr/bin/env python
 
 import tensorflow as tf
+from tensor_ops import center_crop_to_size, produce_low_resolution
 
 def psnr(original, modified):
     """
     Returns the peak signal-to-noise ratio between a tensor and its original, normalized
-    against a maximum value of 1.
+    against a maximum value of 1, in dB.
     """
     mse = tf.reduce_mean(tf.squared_difference(original, modified))
     numerator = -10 * tf.log(mse)
     denominator = tf.log(tf.constant(10, dtype=numerator.dtype))
     return numerator / denominator # equivalent to log10(mse)
+
+def gain(original, modified):
+    """
+    Returns the gain in dB compared to bicubic interpolation.
+    """
+    lowres = produce_low_resolution(original)
+    original_cropped = center_crop_to_size(original, modified.get_shape().as_list())
+    lowres_cropped = center_crop_to_size(lowres, modified.get_shape().as_list())
+    return psnr(original_cropped, modified) - psnr(original_cropped, lowres_cropped)
 
 if __name__ == "__main__":
     from matplotlib import pyplot as plt
