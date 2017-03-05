@@ -1,6 +1,8 @@
 ## Image super-resolution with convolutional neural networks
 
 Written by Caleb Zulawski and Kelvin Lin for ECE411 *Computational Graphs for Machine Learning* at The Cooper Union.
+The implementation is based on [*Image Super-Resolution Using Deep
+Convolutional Networks*](https://arxiv.org/pdf/1501.00092v3.pdf).
 
 ---
 
