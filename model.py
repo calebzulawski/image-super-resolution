@@ -77,6 +77,7 @@ class Model(object):
         self.loss = tf.nn.l2_loss(self.input - low_res)
 
 if __name__ == "__main__":
+    print("Testing model...")
     m = Model()
     m.build_model()
     check = tf.add_check_numerics_ops()
