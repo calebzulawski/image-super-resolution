@@ -49,7 +49,7 @@ def produce_low_resolution(input, k=3, blur_size=3, blur_sigma=0.5):
 
     return lr
 
-class Model(object):
+class Model():
     def __init__(self, batch_size=10, fsub=33, n_channels=3, f1=9, f2=1, f3=5, n1=64, n2=32, is_training=True):
         self.batch_size = batch_size
         self.fsub = fsub
