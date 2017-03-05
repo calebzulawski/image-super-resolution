@@ -15,7 +15,7 @@ def psnr(original, modified):
 
 def gain(original, modified):
     """
-    Returns the gain in dB compared to bicubic interpolation.
+    Returns the PSNR gain in dB compared to bicubic interpolation.
     """
     lowres = produce_low_resolution(original)
     original_cropped = center_crop_to_size(original, modified.get_shape().as_list())
