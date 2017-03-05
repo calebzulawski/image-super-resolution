@@ -68,9 +68,10 @@ class Model(object):
                             activation_fn=tf.nn.relu,
                             weights_initializer=tf.truncated_normal_initializer(0.0, 0.001),
                             weights_regularizer=slim.l2_regularizer(0.002)):
-            net = slim.conv2d(self.input, self.n1, [self.f1, self.f1], padding='VALID', scope='conv1')
-            net = slim.conv2d(self.input, self.n2, [self.f2, self.f2], padding='VALID', scope='conv2')
-            net = slim.conv2d(self.input, self.input.get_shape()[3], [self.f3, self.f3], padding='VALID', scope='conv3')
+            net = self.input
+            net = slim.conv2d(net, self.n1, [self.f1, self.f1], padding='VALID', scope='conv1')
+            net = slim.conv2d(net, self.n2, [self.f2, self.f2], padding='VALID', scope='conv2')
+            net = slim.conv2d(net, self.input.get_shape()[3], [self.f3, self.f3], padding='VALID', scope='conv3')
         self.output = net
 
         low_res = produce_low_resolution(self.input)
