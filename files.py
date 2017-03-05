@@ -8,7 +8,7 @@ class FileReader():
     and forming batches.
     """
 
-    def __init__(self, glob, crop_shape, batch_size=10):
+    def __init__(self, glob, crop_shape, batch_size=10, dtype=tf.float32):
         """
         Creates a FileReader that matches image filenames with `glob`,
         crops them to `crop_shape`, and produces batches of size `batch_size`.
@@ -24,6 +24,7 @@ class FileReader():
         # Crop the image to the desired size
         crop_shape = tf.concat([crop_shape, [3]], 0)
         cropped = tf.random_crop(image, crop_shape)
+        cropped = tf.cast(cropped, dtype)/255.
 
         # Create a batch
         self.batch = tf.train.batch([cropped], batch_size=batch_size)
@@ -49,10 +50,9 @@ class FileReader():
         self.coord.join(self.threads)
 
 if __name__ == "__main__":
+    from matplotlib import pyplot as plt
+    import numpy as np
     with tf.Session() as sess:
-        from matplotlib import pyplot as plt
-        import numpy as np
-
         # Display M x N images, for a total batch size of M*N
         M = 5
         N = 10
