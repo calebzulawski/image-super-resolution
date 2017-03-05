@@ -47,7 +47,8 @@ def produce_low_resolution(input, k=3, blur_size=3, blur_sigma=0.5):
     # Apply bicubic interpolation
     lr = tf.image.resize_bicubic(lr, input.get_shape().as_list()[1:3])
 
-    # Apply clamping/quantization
+    # Apply clipping and quantization
+    lr = tf.clip_by_value(lr, 0, 1)
     lr = tf.fake_quant_with_min_max_args(lr, min=0, max=1)
 
     return lr
