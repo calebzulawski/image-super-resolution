@@ -9,8 +9,7 @@ class Trainer():
     def __init__(self, sess, model):
         self.sess = sess
         self.model = model
-
-        self.optimizer = tf.train.GradientDescentOptimizer(0.0001).minimize(model.loss)
+        self.optimizer = tf.train.AdamOptimizer(0.0001).minimize(model.loss)
 
     def train_iter(self, batcher, validate=False):
         if validate:
@@ -28,7 +27,7 @@ class Trainer():
 
 
 if __name__ == '__main__':
-    batch_size = 100
+    batch_size = 512
     import model
     from files import FileReader
     m = model.Model(batch_size=batch_size)
