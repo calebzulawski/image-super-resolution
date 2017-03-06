@@ -5,6 +5,8 @@ import tensorflow as tf
 import validation
 from tensor_ops import center_crop_to_size
 
+save_path = './saved_model/model.ckpt'
+
 class Trainer():
     def __init__(self, sess, model):
         self.sess = sess
@@ -17,6 +19,8 @@ class Trainer():
             batch = self.sess.run(batcher)
             _, loss, psnr = self.sess.run([self.optimizer, self.model.loss, validation.gain(self.model.input, self.model.output)], feed_dict={self.model.input: batch})
             print('Loss: {:.2f}\tGain compared to bicubic interpolation: {:.2f} dB'.format(loss, psnr))
+            sp = saver.save(sess, save_path)
+            print('model saved in: {}'.format(sp))
         else:
             batch = self.sess.run(batcher)
             self.sess.run(self.optimizer, feed_dict={self.model.input: batch})
@@ -35,7 +39,12 @@ if __name__ == '__main__':
     with tf.Session() as sess:
         t = Trainer(sess, m)
         f = FileReader('./images/crop_256/*/*.JPEG', (33, 33), batch_size=batch_size)
-        tf.global_variables_initializer().run()
+        sess.run(tf.global_variables_initializer())
+        saver = tf.train.Saver(tf.global_variables())
+        try:
+            saver.restore(sess,save_path)
+        except:
+            print('Error while restoring');
         f.start_queue_runners()
         t.train(f.get_batch())
         f.stop_queue_runners()
