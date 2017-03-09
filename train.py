@@ -5,30 +5,27 @@ import tensorflow as tf
 import validation
 from tensor_ops import center_crop_to_size
 
-save_path = './saved_model/model.ckpt'
-
 class Trainer():
     def __init__(self, sess, model):
         self.sess = sess
         self.model = model
         self.optimizer = tf.train.AdamOptimizer(0.0001).minimize(model.loss)
 
-    def train_iter(self, batcher, validate=False):
+    def train_iter(self, batcher, validate=False, saver=None, path=None):
         if validate:
             # There's probably a better way to do this than getting a batch, then feeding it back into the model
             batch = self.sess.run(batcher)
             _, loss, psnr = self.sess.run([self.optimizer, self.model.loss, validation.gain(self.model.input, self.model.output)], feed_dict={self.model.input: batch})
             print('Loss: {:.2f}\tGain compared to bicubic interpolation: {:.2f} dB'.format(loss, psnr))
-            sp = saver.save(sess, save_path)
-            print('model saved in: {}'.format(sp))
+            if saver and path:
+                sp = saver.save(self.sess, path)
         else:
             batch = self.sess.run(batcher)
             self.sess.run(self.optimizer, feed_dict={self.model.input: batch})
 
-    def train(self, batcher):
+    def train(self, batcher, saver=None, path=None):
         for i in range(100000):
-            self.train_iter(batcher, i % 2 == 0)
-
+            self.train_iter(batcher, i % 2 == 0, saver=saver, path=path)
 
 if __name__ == '__main__':
     batch_size = 512

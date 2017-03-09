@@ -18,7 +18,10 @@ class Model():
         self.is_training = is_training
 
     def build_model(self):
-        self.input = tf.placeholder(tf.float32, shape=[self.batch_size, self.fsub, self.fsub, self.n_channels])
+        if self.is_training:
+            self.input = tf.placeholder(tf.float32, shape=[self.batch_size, self.fsub, self.fsub, self.n_channels])
+        else:
+            self.input = tf.placeholder(tf.float32, shape=[None, None, None, self.n_channels])
 
         with slim.arg_scope([slim.conv2d],
                             activation_fn=tf.nn.relu,
@@ -30,11 +33,12 @@ class Model():
             net = slim.conv2d(net, self.input.get_shape()[3], [self.f3, self.f3], padding='VALID', scope='conv3')
         self.output = net
 
-        low_res = produce_low_resolution(self.input)
-        low_res_cropped = center_crop_to_size(low_res, self.output.get_shape().as_list())
-        self.loss = tf.nn.l2_loss(self.output - low_res_cropped)
-        for reg_loss in tf.losses.get_regularization_losses():
-            self.loss += reg_loss
+        if self.is_training:
+            low_res = produce_low_resolution(self.input)
+            low_res_cropped = center_crop_to_size(low_res, self.output.get_shape().as_list())
+            self.loss = tf.nn.l2_loss(self.output - low_res_cropped)
+            for reg_loss in tf.losses.get_regularization_losses():
+                self.loss += reg_loss
 
 if __name__ == "__main__":
     print("Testing model...")
