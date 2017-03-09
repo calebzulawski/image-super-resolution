@@ -24,7 +24,7 @@ if __name__ == '__main__':
             t = Trainer(sess, m)
             f = FileReader('./images/crop_256/*/*.JPEG', (args.subimage_size, args.subimage_size), batch_size=args.batch_size)
             sess.run(tf.global_variables_initializer())
-            saver = tf.train.Saver(tf.global_variables())
+            saver = tf.train.Saver(tf.trainable_variables())
             try:
                 saver.restore(sess, args.model)
             except:
@@ -37,7 +37,7 @@ if __name__ == '__main__':
         m.build_model()
         with tf.Session() as sess:
             sess.run(tf.global_variables_initializer())
-            saver = tf.train.Saver(tf.global_variables())
+            saver = tf.train.Saver(tf.trainable_variables())
             try:
                 saver.restore(sess, args.model)
             except:
