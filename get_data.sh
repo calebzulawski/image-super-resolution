@@ -7,7 +7,7 @@ source ./imagenet_credentials.sh
 crop=256
 
 # Set up data directories
-mkdir -p tars images images/original images/crop_$crop
+mkdir -p tars images/original images/crop_$crop/
 
 # Download images
 while read line; do
@@ -30,6 +30,7 @@ done <wnids.txt
 # Crop images
 for dir in images/original/*; do
     wnid=$(basename $dir)
+
     outdir=images/crop_$crop/$wnid
     if [ -d "$outdir" ]; then
         echo "Already cropped $wnid..."
@@ -46,3 +47,32 @@ for dir in images/original/*; do
         fi
     done
 done
+
+#split into train, test and validation sets
+setpath=images/sets
+
+if [ ! -d "$setpath" ];
+then
+    mkdir -p $setpath $setpath/test $setpath/validation $setpath/train
+    for dir in images/crop_$crop/*
+    do
+        for image in $dir/*
+        do
+            set=$(( $RANDOM % 100 ))
+
+            if [ $set -gt 90 ];
+            then
+                setname='test'
+            elif [ $set -gt 80 ];
+            then
+                setname='validation'
+            else
+                setname='train'
+            fi
+
+            cp $image $setpath/$setname;
+        done
+    done
+else
+    echo "already generated dataset"
+fi
