@@ -22,7 +22,9 @@ if __name__ == '__main__':
         m.build_model()
         with tf.Session() as sess:
             t = Trainer(sess, m)
-            f = FileReader('./images/crop_256/*/*.JPEG', (args.subimage_size, args.subimage_size), batch_size=args.batch_size)
+            f = FileReader('./images/sets/train/*.JPEG', (args.subimage_size, args.subimage_size), batch_size=args.batch_size)
+            v = FileReader('./images/sets/validation/*.JPEG', (args.subimage_size, args.subimage_size), batch_size=args.batch_size)
+
             sess.run(tf.global_variables_initializer())
             saver = tf.train.Saver(tf.trainable_variables())
             try:
@@ -30,7 +32,9 @@ if __name__ == '__main__':
             except:
                 print('No save file found.  Creating new file at {}'.format(args.model));
             f.start_queue_runners()
-            t.train(f.get_batch(), saver=saver, path=args.model)
+            v.start_queue_runners()
+            t.train(f.get_batch(), saver=saver, path=args.model, val=v.get_batch())
+            v.stop_queue_runners()
             f.stop_queue_runners()
     elif args.mode == 'generate':
         m = Model(is_training=False)
