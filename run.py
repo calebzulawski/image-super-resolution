@@ -9,7 +9,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Process some integers.')
     parser.add_argument('mode', type=str, help='operating mode (train or generate)')
     parser.add_argument('--model', type=str, default='./saved_model/model.ckpt')
-    parser.add_argument('--input', type=str, nargs='+')
+    parser.add_argument('--input', type=str, nargs='+', default=['./input/input.JPEG'])
     parser.add_argument('--batch-size', type=int, default=512)
     parser.add_argument('--subimage-size', type=int, default=33)
 
