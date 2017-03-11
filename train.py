@@ -14,22 +14,22 @@ class Trainer():
         self.optimizer = tf.train.AdamOptimizer(0.0001).minimize(model.loss)
 
     def train_iter(self, batcher, validate=False, saver=None, path=None, val=None):
+        batch = self.sess.run(batcher)
+        self.sess.run(self.optimizer, feed_dict={self.model.input: batch})
+
         if validate:
             # There's probably a better way to do this than getting a batch, then feeding it back into the model
             batch = self.sess.run(val)
-            _, loss, psnr = self.sess.run([self.optimizer, self.model.loss, validation.gain(self.model.input, self.model.output)], feed_dict={self.model.input: batch})
+            loss, psnr = self.sess.run([self.model.loss, validation.gain(self.model.input, self.model.output)], feed_dict={self.model.input: batch})
             print('Loss: {:.2f}\tGain compared to bicubic interpolation: {:.2f} dB'.format(loss, psnr))
             if saver and path:
                 sp = saver.save(self.sess, path)
-        else:
-            batch = self.sess.run(batcher)
-            self.sess.run(self.optimizer, feed_dict={self.model.input: batch})
 
     def train(self, batcher, saver=None, path=None, val=None):
         if val is None:
             val = batcher
         for i in range(100000):
-            self.train_iter(batcher, i % 2 == 0, saver=saver, path=path, val=val)
+            self.train_iter(batcher, i % 10 == 0, saver=saver, path=path, val=val)
 
 if __name__ == '__main__':
     batch_size = 512
