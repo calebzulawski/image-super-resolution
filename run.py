@@ -57,7 +57,7 @@ if __name__ == '__main__':
             _, image_file = image_reader.read(filename_queue)
             image = tf.image.decode_jpeg(image_file, channels=3)
             # Crop the image to the desired size
-            crop_shape = tf.concat([(128,128), [3]], 0)
+            crop_shape = tf.concat([(256,256), [3]], 0)
             cropped = tf.random_crop(image, crop_shape)
             cropped = tf.cast(cropped, tf.float32)/255.
 
