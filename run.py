@@ -52,7 +52,7 @@ if __name__ == '__main__':
                 print('Could not load model file: {}!'.format(args.model))
                 sys.exit(1)
             # Generate new images here
-            filename_queue = tf.train.string_input_producer(['./input/input.JPEG'])
+            filename_queue = tf.train.string_input_producer(args.input)
             image_reader = tf.WholeFileReader()
             _, image_file = image_reader.read(filename_queue)
             image = tf.image.decode_jpeg(image_file, channels=3)
