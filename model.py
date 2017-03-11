@@ -28,9 +28,15 @@ class Model():
                             weights_initializer=tf.truncated_normal_initializer(0.0, 0.001),
                             weights_regularizer=slim.l2_regularizer(0.002)):
             net = self.input
+            if self.is_training:
+                net = produce_low_resolution(self.input)
+            else:
+                net = tf.image.resize_bicubic(self.input, tf.shape(self.input)[1:3]*3)
             net = slim.conv2d(net, self.n1, [self.f1, self.f1], padding='VALID', scope='conv1')
             net = slim.conv2d(net, self.n2, [self.f2, self.f2], padding='VALID', scope='conv2')
             net = slim.conv2d(net, self.input.get_shape()[3], [self.f3, self.f3], padding='VALID', scope='conv3')
+            net = tf.clip_by_value(net, 0, 1)
+            net = tf.fake_quant_with_min_max_args(net, 0, 1)
         self.output = net
 
         if self.is_training:
