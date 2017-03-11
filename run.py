@@ -77,7 +77,7 @@ if __name__ == '__main__':
                 out_shape = out_shape[1:]
             print(out_shape)
 
-            output = output.reshape(out_shape)
+            output = output.reshape(out_shape)*255
             
             images_out = tf.image.encode_jpeg(output,name="output")
             print('writing to file')
