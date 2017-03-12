@@ -43,8 +43,7 @@ class Model():
             net = slim.conv2d(net, self.input.get_shape()[3], [self.f3, self.f3], padding='VALID', scope='conv3')
         self.output = net
 
-        net = tf.clip_by_value(net, 0, 1)
-        self.image_output = tf.fake_quant_with_min_max_args(net, 0, 1)
+        self.image_output = clip_and_quantize(net)
 
         self.bicubic = clip_and_quantize(bicubic)
 
