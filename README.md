@@ -28,6 +28,12 @@ accesskey=youraccesskey
 
 Then you can run `./get_data.sh` which will download and prepare the images from the ImageNet synsets specified in `wnids.txt`.
 
+## Running this project
+#### Training
+This assumes the training data has already been downloaded with the `get_data.sh` script.  First, create a directory for saving the model (`saved_model` for the default location).  To train the model, run `./run.py train`.  This will continue training indefinitely–the program will only exit with a keyboard interrupt (control-c), so wait until validation results are satisfactory.
+#### Generating high resolution images
+Once the model is trained, run `./run.py generate --input your_input_image.jpg`.  The bicubic interpolation is written to `outputs/bicubic.jpg`, and the improved interpolation is written to `outputs/output.jpg`.
+
 ## Example images
 
 [01-input]: img/01-input.jpg
