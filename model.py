@@ -34,6 +34,7 @@ class Model():
                             weights_regularizer=slim.l2_regularizer(0.002)):
             if self.is_training:
                 net = produce_low_resolution(self.input)
+                bicubic = net
             else:
                 bicubic = tf.image.resize_bicubic(self.input, tf.shape(self.input)[1:3]*3)
                 net = bicubic
