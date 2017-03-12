@@ -15,6 +15,20 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
+    def reshape_for_output(image):
+        shape = image.shape
+        if len(shape) > 3:
+            shape = shape[1:]
+        return image.reshape(shape)*255
+
+    def write_image_to_file(image, filename):
+        image = reshape_for_output(image)
+        images_out = tf.image.encode_jpeg(image)
+        fh = open(filename, "wb+")
+        fh.write(images_out.eval())
+        fh.close()
+
+
     if args.mode == 'train':
         from train import Trainer
         from files import FileReader
@@ -41,6 +55,7 @@ if __name__ == '__main__':
             print("must provide an input file in generate mode")
             sys.exit(1)
         from files import FileReader
+        from validation import produce_low_resolution as plr
         m = Model(is_training=False)
         m.build_model()
         with tf.Session() as sess:
@@ -66,25 +81,14 @@ if __name__ == '__main__':
             coord = tf.train.Coordinator()
             threads = tf.train.start_queue_runners(coord=coord)
 
-            output = sess.run(m.output, feed_dict={m.input: batch.eval()})
-            
+            output, bicubic = sess.run([m.image_output, m.bicubic],  feed_dict={m.input: batch.eval()})
+
             coord.request_stop()
             coord.join(threads)
             # Calculate PSNR gain for each one
-            print('encoding jpegs')
-            out_shape = output.shape
-            if len(out_shape) > 3:
-                out_shape = out_shape[1:]
-            print(out_shape)
+            write_image_to_file(output, './outputs/output.jpg')
 
-            output = output.reshape(out_shape)*255
-            
-            images_out = tf.image.encode_jpeg(output,name="output")
-            print('writing to file')
-            fh = open("./outputs/output.jpeg", "wb+")
-            fh.write(images_out.eval())
-            fh.close()
-            print('file closed')
+            write_image_to_file(bicubic, './outputs/bicubic.jpg')
     else:
         print('Invalid "mode": {}!'.format(args.mode))
     sys.exit(0)

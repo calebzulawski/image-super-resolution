@@ -5,6 +5,11 @@ import tensorflow.contrib.slim as slim
 import numpy as np
 from tensor_ops import center_crop_to_size, produce_low_resolution
 
+def clip_and_quantize(input):
+    output = tf.clip_by_value(input, 0, 1)
+    output = tf.fake_quant_with_min_max_args(output, 0, 1)
+    return output
+
 class Model():
     def __init__(self, batch_size=10, fsub=33, n_channels=3, f1=9, f2=1, f3=5, n1=64, n2=32, is_training=True):
         self.batch_size = batch_size
@@ -27,17 +32,20 @@ class Model():
                             activation_fn=tf.nn.relu,
                             weights_initializer=tf.truncated_normal_initializer(0.0, 0.001),
                             weights_regularizer=slim.l2_regularizer(0.002)):
-            net = self.input
             if self.is_training:
                 net = produce_low_resolution(self.input)
             else:
-                net = tf.image.resize_bicubic(self.input, tf.shape(self.input)[1:3]*3)
+                bicubic = tf.image.resize_bicubic(self.input, tf.shape(self.input)[1:3]*3)
+                net = bicubic
             net = slim.conv2d(net, self.n1, [self.f1, self.f1], padding='VALID', scope='conv1')
             net = slim.conv2d(net, self.n2, [self.f2, self.f2], padding='VALID', scope='conv2')
             net = slim.conv2d(net, self.input.get_shape()[3], [self.f3, self.f3], padding='VALID', scope='conv3')
-            net = tf.clip_by_value(net, 0, 1)
-            net = tf.fake_quant_with_min_max_args(net, 0, 1)
         self.output = net
+
+        net = tf.clip_by_value(net, 0, 1)
+        self.image_output = tf.fake_quant_with_min_max_args(net, 0, 1)
+
+        self.bicubic = clip_and_quantize(bicubic)
 
         if self.is_training:
             input_cropped = center_crop_to_size(self.input, self.output.get_shape().as_list())
