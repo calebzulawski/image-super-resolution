@@ -6,6 +6,15 @@ Convolutional Networks*](https://arxiv.org/pdf/1501.00092v3.pdf).
 
 ---
 
+## Dataset
+Images are downloaded from ImageNet from a variety of categories.  Subimages (33x33) are randomly cropped from each image and used to train the network.
+
+## Convolutional Neural Network
+The network is designed to improve the perceived quality of an image upscaled with bicubic interpolation.  The network is made up of 3 convolutional layers (9x9, 64 features; 1x1, 32 features; 5x5, 3 channels).  Padding is not used, so the output image is 12 pixels smaller in each dimension.
+#### Training
+To train the network, a Gaussian blur is applied to each subimage (3x3 kernel, σ=0.2), before downsampling by 3 and interpolating by 3 using bicubic interpolation.  This interpolated subimage is the input to the network, and the output is compared with the original full-resolution image.  The results are validated by calculating the peak signal-to-noise ratio (PSNR) gain from the bicubic interpolation to the output of the CNN.  When we stopped our training, the PSNR gain was approximately 1.2 dB. 
+#### Generation
+When generating new images at a higher resolution, the image is scaled by 3 using bicubic interpolation and input to the network.
 
 ## Downloading ImageNet
 To download ImageNet, you'll need an account and access to the original ImageNet data, which is freely available for educational and non-commercial use.  This will provide you with an API access key, which is needed to download the data.
@@ -19,7 +28,7 @@ accesskey=youraccesskey
 
 Then you can run `./get_data.sh` which will download and prepare the images from the ImageNet synsets specified in `wnids.txt`.
 
-## Images
+## Example Images
 
 [01-input]: img/01-input.jpg
 [01-bicubic]: img/01-bicubic.jpg
